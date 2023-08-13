@@ -1,0 +1,7 @@
+server:
+    port: 8082
+    servlet:
+        context-path: /gw
+spring:
+    application:
+        name: second-service

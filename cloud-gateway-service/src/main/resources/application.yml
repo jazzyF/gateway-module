@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  webflux:
+    base-path: /gw
+
+spring.cloud:
+  gateway:
+    routes:
+      - id: employeeModule
+        uri: http://localhost:8081/
+        predicates:
+          - Path=${spring.webflux.base-path}/employee/**
+      - id: consumerModule
+        uri: http://localhost:8082/
+        predicates:
+        - Path=${spring.webflux.base-path}/consumer/**
+      - id: employee
+        uri: http://localhost:8081/
+        predicates:
+        - Path=${spring.webflux.base-path}/tchao
+        - Query=name
+        filters:
+        - PrefixPath=${spring.webflux.base-path}/api/v1
+        - RewritePath=${spring.webflux.base-path}/tchao(?<segment>.*), /bye$\{segment}
+      - id: consumer
+        uri: http://localhost:8082/
+        predicates:
+        - Path=${spring.webflux.base-path}/greet/**
+        filters:
+        - PrefixPath=${spring.webflux.base-path}/rs/api
+        - RewritePath=${spring.webflux.base-path}/greet/?(?<segment>.*), /bye/$\{segment}
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+    features:
+      enabled: true
+    restart:
+      enabled: true
